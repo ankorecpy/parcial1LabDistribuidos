@@ -1,14 +1,22 @@
 
+const MAX_LOGIN = 16;
+const MAX_CLAVE = 16;
+
+const MAX_CODIGO = 9;
+const MAX_NOMBRES = 20;
+const MAX_APELLIDOS = 20;
+const MAX_ROL = 15;
+
 struct adminSvdrGU {
-	char * login;
-	char * clave;
+	char login[MAX_LOGIN];
+	char clave[MAX_CLAVE];
 };
 
 struct usuario {
-	char * codigo;
-	char * nombres;
-	char * apellidos;
-	char * rol;
+	char codigo[MAX_CODIGO];
+	char nombres[MAX_NOMBRES];
+	char apellidos[MAX_APELLIDOS];
+	char rol[MAX_ROL];
 };
 
 typedef struct adminSvdrGU adminGU;

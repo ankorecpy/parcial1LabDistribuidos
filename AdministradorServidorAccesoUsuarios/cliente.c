@@ -3,28 +3,20 @@
  * These are only templates and you can use them
  * as a guideline for developing your own functions.
  */
-
+		
 #include "adminSvdrGU.h"
 
-void capturarCredenciales(adminGU * credencial) {
-	(*credencial).login = (char *)malloc(sizeof(char) * 50);
-	(*credencial).clave = (char *)malloc(sizeof(char) * 50);
-	printf("\nLogin: ");
-	scanf("%s", (*credencial).login);
-	printf("\nClave: ");
-	scanf("%s", (*credencial).clave);
-}
-
-void informarResultadoOperacion(CLIENT * clnt, int * resultado, int valorExito, char * mensajeExito, char * mensajeFallo) {
-	if (resultado == (int *)NULL) {
-		clnt_perror (clnt, "call failed");
-	} else {
-		if ((*resultado) == valorExito) {
-			printf("\n%s\n", mensajeExito);
-		} else {
-			printf("\n%s\n", mensajeFallo); 
-		}
-	}
+usuario capturarDatosUsuario() {
+	usuario auxUsuario;	
+	printf("\nCodigo: ");
+	scanf("%s", auxUsuario.codigo);
+	printf("\nMonbres: ");
+	scanf("%s", auxUsuario.nombres);
+	printf("\nApellidos: ");
+	scanf("%s", auxUsuario.apellidos);
+	printf("\nRol: ");
+	scanf("%s", auxUsuario.rol);
+	return auxUsuario;
 }
 
 void
@@ -49,34 +41,69 @@ gestion_usuarios_1(char *host)
 		exit (1);
 	}
 #endif	/* DEBUG */
-	int opcion = -1, auxCredencial = 0;
-	result_1 = 0;	
-	do {			
-		while (auxCredencial == 0) {			
-			capturarCredenciales(&acceso_admin_1_arg);
+
+	int adminAccesado = 0, opcion = -1;
+	do {
+		while (adminAccesado == 0) {
+			system("clear");
+			printf("\nLogin: ");
+			scanf("%s", (acceso_admin_1_arg).login);
+			printf("Clave: ");
+			scanf("%s", (acceso_admin_1_arg).clave);
 			result_1 = acceso_admin_1(&acceso_admin_1_arg, clnt);
-			printf("\nEnviando Login %s, Clave %s", acceso_admin_1_arg.login, acceso_admin_1_arg.clave);
-			informarResultadoOperacion(clnt, result_1, 1, "Acceso Concedido", "Acceso denegado, intente de nuevo");				
-			auxCredencial = (*result_1);
+			if (result_1 == (int *) NULL) {
+				clnt_perror (clnt, "call failed");
+			} else {
+				adminAccesado = (*result_1);
+			}
+		} 
+		printf("\n=============== MENU ===============\n");
+		printf("\n1. Ingresar usuario.");
+		printf("\n2. Modificar usuario.");
+		printf("\n3. Borrar usuario.");
+		printf("\n\nOpcion > ");
+		scanf("%d", &opcion);
+		switch (opcion) {
+			case 0:
+				adminAccesado = 0;
+			break;
+			case 1:
+				
+				result_2 = ingreso_usuario_1(&ingreso_usuario_1_arg, clnt);
+				if (result_2 == (int *) NULL) {
+					clnt_perror (clnt, "call failed");
+				} else {
+					
+				}
+			break;
+			case 2:
+				//PARA EL MODIFICAR CAMPOS ESPECIFICOS DE USUARIO SE USA EL OBTENER USUARIO
+				
+				/*
+				result_4 = obtener_usuario_1(&obtener_usuario_1_arg, clnt);
+				if (result_4 == (usuario *) NULL) {
+					clnt_perror (clnt, "call failed");
+				}
+				*/
+				result_3 = modificar_usuario_1(&modificar_usuario_1_arg, clnt);
+				if (result_3 == (int *) NULL) {
+					clnt_perror (clnt, "call failed");
+				}
+			break;
+			case 3:			
+				result_5 = eliminar_usuario_1(&eliminar_usuario_1_arg, clnt);
+				if (result_5 == (int *) NULL) {
+					clnt_perror (clnt, "call failed");
+				}
+			break;
+			default:
+				printf("\nopcion incorrecta, intente de nuevo");
+			break;
 		}
-		/*
-		result_2 = ingreso_usuario_1(&ingreso_usuario_1_arg, clnt);
-		if (result_2 == (int *) NULL) {
-			clnt_perror (clnt, "call failed");
-		}
-		result_3 = modificar_usuario_1(&modificar_usuario_1_arg, clnt);
-		if (result_3 == (int *) NULL) {
-			clnt_perror (clnt, "call failed");
-		}
-		result_4 = obtener_usuario_1(&obtener_usuario_1_arg, clnt);
-		if (result_4 == (usuario *) NULL) {
-			clnt_perror (clnt, "call failed");
-		}
-		result_5 = eliminar_usuario_1(&eliminar_usuario_1_arg, clnt);
-		if (result_5 == (int *) NULL) {
-			clnt_perror (clnt, "call failed");
-		}*
-		* */
+		
+		
+		
+
 	} while (opcion != 0);
 #ifndef	DEBUG
 	clnt_destroy (clnt);

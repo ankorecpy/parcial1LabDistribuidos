@@ -13,18 +13,24 @@
 extern "C" {
 #endif
 
+#define MAX_LOGIN 16
+#define MAX_CLAVE 16
+#define MAX_CODIGO 9
+#define MAX_NOMBRES 20
+#define MAX_APELLIDOS 20
+#define MAX_ROL 15
 
 struct adminSvdrGU {
-	char *login;
-	char *clave;
+	char login[MAX_LOGIN];
+	char clave[MAX_CLAVE];
 };
 typedef struct adminSvdrGU adminSvdrGU;
 
 struct usuario {
-	char *codigo;
-	char *nombres;
-	char *apellidos;
-	char *rol;
+	char codigo[MAX_CODIGO];
+	char nombres[MAX_NOMBRES];
+	char apellidos[MAX_APELLIDOS];
+	char rol[MAX_ROL];
 };
 typedef struct usuario usuario;
 

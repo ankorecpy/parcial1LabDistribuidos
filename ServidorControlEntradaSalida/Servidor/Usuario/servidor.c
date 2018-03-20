@@ -5,13 +5,24 @@
  */
 
 #include "accesoUsrs.h"
+#include "enlcSrvdrs.h"
 #include <stdio.h>
+
+int * comunicacion_servidores_1(char * codigo, char *host);
+
 
 char **
 solicitud_entrada_1_svc(char **argp, struct svc_req *rqstp)
 {
-	static char * result = "solicitud recibida";
+	static char * result;
 	printf("\nSolicitud de entrada con codigo %s\n", *argp);	
+	int * respuesta = comunicacion_servidores_1(*argp, "localhost");
+	printf("Respuesta servidor Acceso usuarios %d\n", *respuesta);
+	if ((*respuesta) == 1) {
+		
+	} else {
+		result = "Acceso denegado, código no registrado, por favor contacte con el administrador de la aplicación";
+	}
 	fflush(stdout);
 
 	return &result;
@@ -25,3 +36,29 @@ solicitud_salida_1_svc(char **argp, struct svc_req *rqstp)
 	
 	return &result;
 }
+
+
+int * comunicacion_servidores_1(char * codigo, char *host)
+{
+	CLIENT *clnt;
+	int  *result_1;
+	char * validar_codigo_usuario_1_arg;
+
+#ifndef	DEBUG
+	clnt = clnt_create (host, comunicacion_servidores, comunicacion_servidores_version, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+#endif	/* DEBUG */
+	validar_codigo_usuario_1_arg = "5";
+	result_1 = validar_codigo_usuario_1(&codigo, clnt);
+	if (result_1 == (int *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+	return result_1;
+}
+

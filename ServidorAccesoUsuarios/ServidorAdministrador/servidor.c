@@ -15,34 +15,39 @@
 #define MAXTAM_CLAVE 15
 #define MINTAM_CLAVE 8
 
-void obtenerCredencial(char * buffer, int tamanioBuffer) {
-	int descriptor = open(ARCHIVO_ADMIN, O_RDONLY);
-	if (descriptor != -1) {
-		read(descriptor, buffer, tamanioBuffer);
-		close(descriptor);
+
+void crearFichero() {
+	FILE * ficheroAdmin = fopen(ARCHIVO_ADMIN, "a+b");
+	if (ficheroAdmin != NULL) {
+		adminGU admin;
+		strcpy(admin.login, "administrador");
+		strcpy(admin.clave, "administrador");
+		fwrite(&admin, sizeof(adminGU), 1, ficheroAdmin);
+		fclose(ficheroAdmin);
 	} else {
-		printf("\nNo se pudo validar las credenciales del administrador\n");
+		printf("\nNo se pudó crear el fichero admin.txt\n");
 	}
+}
+
+adminGU  obtenerCredencial() {	
+	FILE * ficheroAdmin = fopen(ARCHIVO_ADMIN, "rb");
+	adminGU  resultado;
+	if (ficheroAdmin != NULL) {
+		fread(&resultado, sizeof(adminGU), 1, ficheroAdmin);
+		fclose(ficheroAdmin);
+	} else {
+		printf("\nError al accesar al fichero de administrador");
+	}
+	return resultado;
 }
 
 int *
 acceso_admin_1_svc(adminGU *argp, struct svc_req *rqstp)
-{	
+{
 	printf("\nSolicitud acceso administrador %s %s", (*argp).login + 1, (*argp).clave); 
-	static int  result = 0;
-	int tamanioBuffer = MAXTAM_LOGIN + MAXTAM_CLAVE + 3;
-	char registroAdmin[tamanioBuffer], * auxLogin = (char *)malloc(sizeof(char) * MAXTAM_LOGIN), * auxClave = (char *)malloc(sizeof(char) * MAXTAM_CLAVE), * auxBuffer = (char *)malloc(sizeof(char) * tamanioBuffer);
-	memset(&registroAdmin, ' ', tamanioBuffer);
-	memset(auxBuffer, ' ', tamanioBuffer);
-	memset(auxClave, ' ', MAXTAM_CLAVE);
-	obtenerCredencial(registroAdmin, tamanioBuffer);
-	auxBuffer = strtok(registroAdmin, ";");
-	strcpy(auxLogin, auxBuffer);
-	auxBuffer = strtok(NULL, ";");
-	strcpy(auxClave, auxBuffer);
-	printf("\nLogin: %s long: %d | auxLogin %s long: %d", (*argp).login, strlen((*argp).login), auxLogin, strlen(auxLogin));
-	if ((strcmp(auxLogin, (*argp).login) == 0) && (strcmp(auxClave, (*argp).clave) == 0)) {
-		printf("\nAcceso concedido");
+	static int result = 0;
+	adminGU  admin = obtenerCredencial();
+	if (strcmp(admin.login,(*argp).login) == 0 && strcmp(admin.clave,(*argp).clave) == 0) {
 		result = 1;
 	}
 	fflush(stdout);
